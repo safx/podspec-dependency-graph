@@ -46,14 +46,14 @@ IMAGES   = ['img/*.jpg', 'img/*.png', 'img/*.gif']
 gulp.task 'script', ->
   gulp.src SOURCES
     .pipe filter('!**/main.ls')
-    .pipe lsc() .on 'error', gutil.log
+    .pipe lsc({bare:true}) .on 'error', gutil.log
     .pipe cond isRelease, uglify()
     .pipe gulp.dest (path.join outputdir, 'lib')
 
 gulp.task 'browserify', ['script'], ->
   gulp.src SOURCES
     .pipe filter('**/main.ls')
-    .pipe lsc() .on 'error', gutil.log
+    .pipe lsc({bare:true}) .on 'error', gutil.log
     .pipe browserify()
     .pipe cond isRelease, uglify()
     .pipe gulp.dest (path.join outputdir, 'lib')
@@ -85,6 +85,14 @@ gulp.task 'bower', ->
 #    .pipe flatten()
 #    .pipe (gulp.dest (path.join outputdir, 'lib'))
 #    .pipe (livereload server)
+
+gulp.task 'copy', ->
+  gulp.src 'third_party/**/*.js'
+    .pipe cond isRelease, uglify({preserveComments:'some'})
+    .pipe (gulp.dest 'app/lib')
+    .pipe (livereload server)
+  gulp.src 'data/*.gexf'
+    .pipe (gulp.dest 'app/data')
     
 gulp.task 'watch', ->
   server.listen 35729, (err) ->
@@ -111,5 +119,5 @@ gulp.task 'clean:out', ->
 
 
 
-gulp.task 'publish', ['clean', 'browserify', 'stylus', 'html', 'image', 'bower']
-gulp.task 'default', ['browserify', 'stylus', 'html', 'image', 'bower', 'watch']
+gulp.task 'publish', ['clean', 'browserify', 'stylus', 'html', 'image', 'bower', 'copy']
+gulp.task 'default', ['browserify', 'stylus', 'html', 'image', 'bower', 'copy', 'watch']
