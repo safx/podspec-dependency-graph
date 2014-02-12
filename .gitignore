@@ -1,3 +1,7 @@
+#*#
+*~
+*.log
+
 _site/
 app/
 node_modules/
