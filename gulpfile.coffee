@@ -32,7 +32,7 @@ server    = (require 'tiny-lr')()
 
 
 isRelease = gutil.env.release?
-outputdir = gutil.env.outputdir || 'app'
+
 
 # sources
 SOURCES  = ['src/*.ls']
@@ -40,6 +40,11 @@ STYLUSES = ['stylus/*.stylus']
 HTMLS    = ['html/*.html']
 IMAGES   = ['img/*.jpg', 'img/*.png', 'img/*.gif']
 
+# outdir
+out = (dir) ->
+    ret = gutil.env.outputdir || 'app'
+    return ret unless dir
+    path.join ret, dir
 
 
 # compile
@@ -48,7 +53,7 @@ gulp.task 'script', ->
     .pipe filter('!**/main.ls')
     .pipe lsc({bare:true}) .on 'error', gutil.log
     .pipe cond isRelease, uglify()
-    .pipe gulp.dest (path.join outputdir, 'lib')
+    .pipe gulp.dest (out 'lib')
 
 gulp.task 'browserify', ['script'], ->
   gulp.src SOURCES
@@ -56,14 +61,14 @@ gulp.task 'browserify', ['script'], ->
     .pipe lsc({bare:true}) .on 'error', gutil.log
     .pipe browserify()
     .pipe cond isRelease, uglify()
-    .pipe gulp.dest (path.join outputdir, 'lib')
+    .pipe gulp.dest (out 'lib')
     .pipe (livereload server)
 
 gulp.task 'stylus', ->
   gulp.src STYLUSES
     .pipe (stylus {bare: true}) .on 'error', gutil.log
     .pipe cond isRelease, minifyCss()
-    .pipe (gulp.dest (path.join outputdir, 'css'))
+    .pipe (gulp.dest (out 'css'))
     .pipe (livereload server)
 
 gulp.task 'html', ->
@@ -71,28 +76,28 @@ gulp.task 'html', ->
   gulp.src HTMLS
     .pipe cond isRelease, minifyHTML {empty:true, cdata: true}
     .pipe cond (not isRelease), header reload_script, {}
-    .pipe (gulp.dest outputdir)
+    .pipe (gulp.dest out())
     .pipe (livereload server)
 
 gulp.task 'image', ->
     gulp.src IMAGES
         .pipe minImage({progressive:true})
-        .pipe gulp.dest (path.join outputdir, 'img')
+        .pipe gulp.dest (out 'img')
 
 gulp.task 'bower', ->
 #  bower()
 #    .pipe cond isRelease, uglify({preserveComments:'some'})
 #    .pipe flatten()
-#    .pipe (gulp.dest (path.join outputdir, 'lib'))
+#    .pipe (gulp.dest (out 'lib'))
 #    .pipe (livereload server)
 
 gulp.task 'copy', ->
   gulp.src 'third_party/**/*.js'
     .pipe cond isRelease, uglify({preserveComments:'some'})
-    .pipe (gulp.dest 'app/lib')
+    .pipe (gulp.dest (out 'lib'))
     .pipe (livereload server)
   gulp.src 'data/*.gexf'
-    .pipe (gulp.dest 'app/data')
+    .pipe (gulp.dest (out 'data'))
     
 gulp.task 'watch', ->
   server.listen 35729, (err) ->
@@ -114,7 +119,7 @@ gulp.task 'clean:backup', ->
     .pipe clean()
 
 gulp.task 'clean:out', ->
-  gulp.src ['app/css', 'app/lib', '*.html']
+  gulp.src [out 'data', out 'css', out 'lib', out '*.html']
     .pipe clean()
 
 
