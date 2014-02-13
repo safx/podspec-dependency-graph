@@ -22,6 +22,7 @@ echo    = require 'gulp-filelog'
 cond    = require 'gulp-if'
 flatten = require 'gulp-flatten'
 header  = require 'gulp-header'
+chalk   = require 'chalk'
 
 # packager
 bower = require 'gulp-bower-files'
@@ -36,11 +37,22 @@ isRelease = gutil.env.release?
 
 # sources
 SOURCES  = ['src/*.ls']
-STYLUSES = ['stylus/*.stylus']
+STYLUSES = ['stylus/*.styl']
 HTMLS    = ['html/*.html']
 IMAGES   = ['img/*.jpg', 'img/*.png', 'img/*.gif']
 
-# outdir
+
+# util funcs
+log = (err) ->
+    if err.name? and err.message
+        console.log chalk.white.bgRed.bold '[ERROR] ' + err.name
+        console.log err.message
+    else if typeof err == 'object'
+        for k, v of err
+            console.log k, v
+    else
+        console.log err.toString()
+
 out = (dir) ->
     ret = gutil.env.outputdir || 'app'
     return ret unless dir
@@ -51,25 +63,28 @@ out = (dir) ->
 gulp.task 'script', ->
   gulp.src SOURCES
     .pipe filter('!**/main.ls')
-    .pipe lsc({bare:true}) .on 'error', gutil.log
+    .pipe lsc({bare:true}) .on 'error', log
     .pipe cond isRelease, uglify()
     .pipe gulp.dest (out 'lib')
+  return
 
 gulp.task 'browserify', ['script'], ->
   gulp.src SOURCES
     .pipe filter('**/main.ls')
-    .pipe lsc({bare:true}) .on 'error', gutil.log
+    .pipe lsc({bare:true}) .on 'error', log
     .pipe browserify()
     .pipe cond isRelease, uglify()
     .pipe gulp.dest (out 'lib')
     .pipe (livereload server)
+  return
 
 gulp.task 'stylus', ->
   gulp.src STYLUSES
-    .pipe (stylus {bare: true}) .on 'error', gutil.log
+    .pipe (stylus {bare: true}) .on 'error', log
     .pipe cond isRelease, minifyCss()
     .pipe (gulp.dest (out 'css'))
     .pipe (livereload server)
+  return
 
 gulp.task 'html', ->
   reload_script = """<script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>"""
@@ -78,11 +93,13 @@ gulp.task 'html', ->
     .pipe cond (not isRelease), header reload_script, {}
     .pipe (gulp.dest out())
     .pipe (livereload server)
+  return
 
 gulp.task 'image', ->
-    gulp.src IMAGES
-        .pipe minImage({progressive:true})
-        .pipe gulp.dest (out 'img')
+  gulp.src IMAGES
+    .pipe minImage({progressive:true})
+    .pipe gulp.dest (out 'img')
+  return
 
 gulp.task 'bower', ->
 #  bower()
@@ -98,6 +115,7 @@ gulp.task 'copy', ->
     .pipe (livereload server)
   gulp.src 'data/*.gexf'
     .pipe (gulp.dest (out 'data'))
+  return
     
 gulp.task 'watch', ->
   server.listen 35729, (err) ->

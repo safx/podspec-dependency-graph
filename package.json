@@ -31,7 +31,8 @@
     "gulp-header": "~1.0.2",
     "gulp-bower-files": "~0.1.6",
     "gulp-flatten": "0.0.2",
-    "http-server": "~0.6.1"
+    "http-server": "~0.6.1",
+    "chalk": "~0.4.0"
   },
   "scripts": {
     "start": "http-server -p 8000"
