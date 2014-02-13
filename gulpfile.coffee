@@ -102,18 +102,18 @@ gulp.task 'image', ->
   return
 
 gulp.task 'bower', ->
-#  bower()
-#    .pipe cond isRelease, uglify({preserveComments:'some'})
-#    .pipe flatten()
-#    .pipe (gulp.dest (out 'lib'))
-#    .pipe (livereload server)
+  bower()
+    .pipe cond isRelease, uglify({preserveComments:'some'})
+    .pipe flatten()
+    .pipe (gulp.dest (out 'lib'))
+    .pipe (livereload server)
 
 gulp.task 'copy', ->
   gulp.src 'third_party/**/*.js'
     .pipe cond isRelease, uglify({preserveComments:'some'})
     .pipe (gulp.dest (out 'lib'))
     .pipe (livereload server)
-  gulp.src 'data/*.gexf'
+  gulp.src ['data/*.gexf', 'data/*.json']
     .pipe (gulp.dest (out 'data'))
   return
     

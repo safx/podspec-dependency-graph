@@ -1,0 +1,29 @@
+{
+  "name": "podspec-dependency-graph",
+  "version": "0.0.0",
+  "homepage": "https://github.com/safx/podspec-dependency-graph",
+  "authors": [
+    "Safx <safxdev@gmail.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {},
+  "dependencies": {
+    "magnific-popup": "~0.9.9"
+  },
+  "overrides": {
+    "tether": {
+      "main": "tether.js"
+    },
+    "drop": {
+      "main": "drop.js"
+    }
+  }
+}
