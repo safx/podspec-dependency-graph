@@ -53,10 +53,9 @@ log = (err) ->
     else
         console.log err.toString()
 
-out = (dir) ->
-    ret = gutil.env.outputdir || 'app'
-    return ret unless dir
-    path.join ret, dir
+dest = (p) ->
+  out = gutil.env.outputdir || 'app'
+  gulp.dest if p? then (path.join out, p) else out
 
 
 # compile
@@ -65,7 +64,7 @@ gulp.task 'script', ->
     .pipe filter('!**/main.ls')
     .pipe lsc({bare:true}) .on 'error', log
     .pipe cond isRelease, uglify()
-    .pipe gulp.dest (out 'lib')
+    .pipe dest 'lib'
   return
 
 gulp.task 'browserify', ['script'], ->
@@ -74,7 +73,7 @@ gulp.task 'browserify', ['script'], ->
     .pipe lsc({bare:true}) .on 'error', log
     .pipe browserify()
     .pipe cond isRelease, uglify()
-    .pipe gulp.dest (out 'lib')
+    .pipe dest 'lib'
     .pipe (livereload server)
   return
 
@@ -82,7 +81,7 @@ gulp.task 'stylus', ->
   gulp.src STYLUSES
     .pipe (stylus {bare: true}) .on 'error', log
     .pipe cond isRelease, minifyCss()
-    .pipe (gulp.dest (out 'css'))
+    .pipe dest 'css'
     .pipe (livereload server)
   return
 
@@ -91,30 +90,30 @@ gulp.task 'html', ->
   gulp.src HTMLS
     .pipe cond isRelease, minifyHTML {empty:true, cdata: true}
     .pipe cond (not isRelease), header reload_script, {}
-    .pipe (gulp.dest out())
+    .pipe dest()
     .pipe (livereload server)
   return
 
 gulp.task 'image', ->
   gulp.src IMAGES
     .pipe minImage({progressive:true})
-    .pipe gulp.dest (out 'img')
+    .pipe dest 'img'
   return
 
 gulp.task 'bower', ->
   bower()
     .pipe cond isRelease, uglify({preserveComments:'some'})
     .pipe flatten()
-    .pipe (gulp.dest (out 'lib'))
+    .pipe dest 'lib'
     .pipe (livereload server)
 
 gulp.task 'copy', ->
   gulp.src 'third_party/**/*.js'
     .pipe cond isRelease, uglify({preserveComments:'some'})
-    .pipe (gulp.dest (out 'lib'))
+    .pipe dest 'lib'
     .pipe (livereload server)
   gulp.src ['data/*.gexf', 'data/*.json']
-    .pipe (gulp.dest (out 'data'))
+    .pipe dest 'data'
   return
     
 gulp.task 'watch', ->
