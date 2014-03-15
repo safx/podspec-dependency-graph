@@ -10,7 +10,7 @@
 
 <div ng-controller="PodspecController">
   <div ng-if="podspec[package_name]" ng-repeat="s in [podspec[package_name]]">
-    <div class="package-info-box" ng-style="{{pos}}">
+    <div class="package-info-box" ng-style="pos">
       <div><a href="{{s.homepage}}">{{s.name}}</a>
         <span style="float:right">{{s.version}} ({{s.license.type||s.license}})</span>
       </div>
