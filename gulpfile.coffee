@@ -141,5 +141,5 @@ gulp.task 'clean:out', ->
 
 
 
-gulp.task 'publish', ['clean', 'browserify', 'stylus', 'html', 'image', 'bower', 'copy']
-gulp.task 'default', ['browserify', 'stylus', 'html', 'image', 'bower', 'copy', 'watch']
+gulp.task 'publish', ['clean', 'browserify', 'stylus', 'html', 'image', 'copy']
+gulp.task 'default', ['browserify', 'stylus', 'html', 'image', 'copy', 'watch']
