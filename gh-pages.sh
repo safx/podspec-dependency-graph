@@ -25,4 +25,4 @@ gulp publish --release --outputdir=$clone
 cd "$clone"
 git add .
 git commit -m 'update'
-#git push $remote $branch
+git push $remote $branch
