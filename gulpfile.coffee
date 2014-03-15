@@ -136,7 +136,7 @@ gulp.task 'clean:backup', ->
     .pipe clean()
 
 gulp.task 'clean:out', ->
-  gulp.src [out 'data', out 'css', out 'lib', out '*.html']
+  gulp.src [dest() + '/*']
     .pipe clean()
 
 
